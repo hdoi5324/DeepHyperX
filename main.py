@@ -429,9 +429,9 @@ for run in range(N_RUNS):
     )
 
     mask = np.zeros(gt.shape, dtype="bool")
-    for l in IGNORED_LABELS:
-        mask[gt == l] = True
-    prediction[mask] = 0
+    #for l in IGNORED_LABELS:
+    #    mask[gt == l] = True
+    #prediction[mask] = 0
 
     color_prediction = convert_to_color(prediction)
     display_predictions(
