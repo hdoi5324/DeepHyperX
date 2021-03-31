@@ -22,14 +22,24 @@ CUSTOM_DATASETS_CONFIG = {
 }
 def curacao_loader(folder):
     """--model svm --folder /Users/heather/Downloads/ --dataset transect_028 --training_sample 0.3"""
+    refboard_class_no = 48
+
     transect_data = Dataset(folder + "transect.nc", "r", format="NETCDF4")
     class_data = Dataset(folder + "classmap.nc", "r", format="NETCDF4")
 
     height, width, bands = transect_data["cube"].shape
-    height_offset = 5000
-    height = 2400 # Trim size of image for now
-    img = transect_data['cube'][height_offset:height_offset+height,:width,:].data
-    gt = class_data['labels'][height_offset:height_offset+height,:width,0].data
+
+    # Normalise image wrt refboard
+    img = transect_data['cube'][:height,:width,:].data
+    gt = class_data['labels'][:height,:width,0].data
+    indices = np.nonzero(gt == refboard_class_no)
+    mean_refboard = np.mean(np.array(img[indices]), axis=0)
+    norm = mean_refboard[50]
+
+    height_offset = 0
+    height = 1200 # Trim size of image for now
+    img = img[height_offset:height_offset+height,:,:350]/norm
+    gt = gt[height_offset:height_offset+height,:]
 
     rgb_bands = (240, 140, 60)
 
